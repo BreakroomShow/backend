@@ -1,0 +1,9 @@
+fastapi
+ipython
+PyNaCl
+base58
+python-jose[cryptography]
+redis
+pyjwt
+pusher
+uvicorn
