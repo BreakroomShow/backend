@@ -1,6 +1,7 @@
 from starlette.status import HTTP_400_BAD_REQUEST
 from fastapi import APIRouter, HTTPException, Depends
 from libs import auth, redis_connection
+from models import used_nonce
 
 router = APIRouter()
 
@@ -24,12 +25,12 @@ def login(
             detail=f"Bad message signature.",
         )
 
-    if not auth.verify_nonce(redis_conn, nonce):
+    if used_nonce.exists(redis_conn, nonce):
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,
             detail=f"Bad nonce.",
         )
-    auth.track_nonce(redis_conn, nonce)
+    used_nonce.save(redis_conn, nonce)
 
     return {'token': auth.issue_jwt_token(public_key_base58)}
 

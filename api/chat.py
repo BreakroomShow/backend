@@ -14,6 +14,7 @@ def create_new_message(
 ):
     # todo: verify chat key belongs to active game
     # todo: throttling by credential and text
+    # todo: chat recording
 
     pusher_conn.trigger(chat_key, 'new_message', {'message': message, 'from': {'id': credentials.id}})
 

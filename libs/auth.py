@@ -1,4 +1,3 @@
-import time
 from datetime import datetime, timedelta
 
 import base58
@@ -24,7 +23,6 @@ Issued At: {issued_at}
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/account/token")
 
-_USED_NONCE_REDIS_KEY = 'used_nonce'
 _JWT_SIGNATURE_SECRET = 'Dn3f5UQuDHWjDLaGWUATvxbgtXZW6Abc3zq3J'
 _JWT_TOKEN_TTL_DAYS = 30
 
@@ -52,15 +50,6 @@ def verify_signature(public_key_base58: str, nonce: str, issued_at: str, signatu
     except BadSignatureError:
         return False
     return True
-
-
-def verify_nonce(redis_conn, nonce: str) -> bool:
-    used = redis_conn.hget(_USED_NONCE_REDIS_KEY, nonce)
-    return not used
-
-
-def track_nonce(redis_conn, nonce: str):
-    redis_conn.r.hset(_USED_NONCE_REDIS_KEY, nonce, int(time.time()))
 
 
 def issue_jwt_token(public_address_base58: str) -> str:
