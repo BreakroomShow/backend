@@ -22,6 +22,9 @@ class BaseEvent(BaseModel):
     duration: float
     game_start_offset: float
 
+    class Config:
+        use_enum_values = True
+
 
 class Question(BaseEvent):
     type = EventType.question
