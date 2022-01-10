@@ -59,6 +59,7 @@ async def get_program() -> Program:
 
 
 async def create_game(program: Program, name: str, start_time: datetime):
+    return  # FIXME
     trivia_pda, trivia_bump = _trivia_pda(program.program_id)
     games_counter = (await program.account['Trivia'].fetch(trivia_pda)).games_counter
 
