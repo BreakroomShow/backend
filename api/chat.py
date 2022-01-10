@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.post('/chat/message')
 def create_new_message(
-        chat_key: str = Body(..., embed=True),
+        socket_key: str = Body(..., embed=True),
         message: str = Body(..., embed=True, min_length=1, max_length=200),
         credentials: auth.Credentials = Depends(auth.get_credentials),
         pusher_conn: pusher_client.Pusher = Depends(pusher_client.get_pusher_client),
@@ -16,6 +16,8 @@ def create_new_message(
     # todo: throttling by credential and text
     # todo: chat recording
 
-    pusher_conn.trigger(chat_key, 'new_message', {'message': message, 'from': {'id': credentials.id}})
+    # todo: check that game is active with this socket key
+
+    pusher_conn.trigger(socket_key, 'new_message', {'message': message, 'from': {'id': credentials.id}})
 
     return 'ok'
