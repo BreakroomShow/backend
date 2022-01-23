@@ -5,7 +5,7 @@ from libs import auth, pusher_client
 router = APIRouter()
 
 
-@router.post('/chat/message')
+@router.post('/chats/message')
 def create_new_message(
         socket_key: str = Body(..., embed=True),
         message: str = Body(..., embed=True, min_length=1, max_length=200),
