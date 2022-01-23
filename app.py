@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import account, chats, games
+from api import account, chats, games, replays
 
 app = FastAPI()
 
@@ -17,3 +17,4 @@ app.add_middleware(
 app.include_router(account.router)
 app.include_router(chats.router)
 app.include_router(games.router)
+app.include_router(replays.router)

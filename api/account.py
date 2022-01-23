@@ -12,7 +12,7 @@ def login(
         nonce: str,
         issued_at_string: str,
         signature_base58: str,
-        redis_conn: redis_connection.Redis = Depends(redis_connection.get_redis_connection)
+        redis_conn: redis_connection.Redis = Depends(redis_connection.get)
 ):
     if not auth.verify_signature(
         public_key_base58=public_key_base58,

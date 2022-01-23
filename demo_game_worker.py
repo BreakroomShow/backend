@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 import time
 from libs import game_state, authority_solana, pusher_client, redis_connection
-from models import game
+from models import game, replay
 
 
 def _get_demo_scenario_1() -> game_state.Scenario:
@@ -178,7 +178,7 @@ def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: gam
 
 async def main():
     interval = 600
-    redis_conn = redis_connection.get_redis_connection()
+    redis_conn = redis_connection.get()
     pusher_conn = pusher_client.get_pusher_client()
 
     while True:
@@ -187,13 +187,14 @@ async def main():
         next_game_start_timestamp = (int(time.time()) // interval) * interval + interval
         new_game = game.Game(id=None, chain_name='Test game', chain_start_time=datetime.utcfromtimestamp(next_game_start_timestamp))
         game.create(redis_conn, new_game)
-        await authority_solana.create_game(
-            program,
-            name=new_game.chain_name,
-            start_time=new_game.chain_start_time,
-        )
+        # await authority_solana.create_game(
+        #     program,
+        #     name=new_game.chain_name,
+        #     start_time=new_game.chain_start_time,
+        # )
         await asyncio.sleep(max(next_game_start_timestamp - time.time(), 0))
         game.mark_current(redis_conn, new_game.id)
+        replay.record_start(redis_conn, new_game.id, time.time())
 
         scenario = _get_demo_scenario_1()
         scenario.events = sorted(scenario.events, key=lambda e: e.game_start_offset)
@@ -208,7 +209,11 @@ async def main():
             elif next_event.distribution_type == game_state.DistributionType.socket:
                 _distribute_socket_event(pusher_conn, new_game, next_event)
 
+            replay.record_event(redis_conn, new_game.id, time.time(), next_event)
+
         game.remove_current_mark(redis_conn, new_game.id)
+        replay.record_finish(redis_conn, new_game.id, time.time())
+        replay.set_last(redis_conn, new_game.id)
         await program.close()
 
 

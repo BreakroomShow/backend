@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.get('/games/current')
-def get_current(redis_conn: redis_connection.Redis = Depends(redis_connection.get_redis_connection)):
+def get_current(redis_conn: redis_connection.Redis = Depends(redis_connection.get)):
     current_game = game.get_current(redis_conn)
     if not current_game:
         return {
