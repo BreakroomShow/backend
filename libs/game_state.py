@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict
 from pydantic import BaseModel
 
 
@@ -40,6 +40,7 @@ class AnswerReveal(BaseEvent):
     duration = 5.0
     question: Question
     correct_answer_ind: int
+    answer_count: Dict[int, int]  # ind => count
 
 
 class GameInfoSplash(BaseEvent):

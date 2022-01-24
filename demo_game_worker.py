@@ -13,7 +13,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Soccer', 'Basketball', 'Baseball']
     )
     answer_reveal_1 = game_state.AnswerReveal(
-        game_start_offset=25, question=question_1, correct_answer_ind=0
+        game_start_offset=25, question=question_1, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_1 = game_state.QuestionFact(
         game_start_offset=30, text='Ronaldo has made over $1 billion in career earnings, the first team sport athlete to hit the milestone.'
@@ -24,7 +25,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Zimbabwe', 'France', 'Spain']
     )
     answer_reveal_2 = game_state.AnswerReveal(
-        game_start_offset=55, question=question_2, correct_answer_ind=0
+        game_start_offset=55, question=question_2, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_2 = game_state.QuestionFact(
         game_start_offset=60,
@@ -36,7 +38,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Apple', 'Ford', 'Lipton']
     )
     answer_reveal_3 = game_state.AnswerReveal(
-        game_start_offset=85, question=question_3, correct_answer_ind=0
+        game_start_offset=85, question=question_3, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_3 = game_state.QuestionFact(
         game_start_offset=90,
@@ -48,7 +51,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Captain America', 'Superman', 'Charlie Brown']
     )
     answer_reveal_4 = game_state.AnswerReveal(
-        game_start_offset=115, question=question_4, correct_answer_ind=0
+        game_start_offset=115, question=question_4, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_4 = game_state.QuestionFact(
         game_start_offset=120,
@@ -60,7 +64,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Old Town Road', 'Despactio', 'Uptown Funk']
     )
     answer_reveal_5 = game_state.AnswerReveal(
-        game_start_offset=145, question=question_5, correct_answer_ind=0
+        game_start_offset=145, question=question_5, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_5 = game_state.QuestionFact(
         game_start_offset=150,
@@ -72,7 +77,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['3', '2', '1']
     )
     answer_reveal_6 = game_state.AnswerReveal(
-        game_start_offset=175, question=question_6, correct_answer_ind=0
+        game_start_offset=175, question=question_6, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_6 = game_state.QuestionFact(
         game_start_offset=180,
@@ -84,7 +90,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['North Korea', 'Singapore', 'Myanmar']
     )
     answer_reveal_7 = game_state.AnswerReveal(
-        game_start_offset=205, question=question_7, correct_answer_ind=0
+        game_start_offset=205, question=question_7, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_7 = game_state.QuestionFact(
         game_start_offset=210,
@@ -96,7 +103,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Titanic', 'The Departed', 'Catch Me If You Can']
     )
     answer_reveal_8 = game_state.AnswerReveal(
-        game_start_offset=235, question=question_8, correct_answer_ind=0
+        game_start_offset=235, question=question_8, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_8 = game_state.QuestionFact(
         game_start_offset=240,
@@ -108,7 +116,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Schwerer Gustav', 'Kleiner Goliath', 'Stolz Freude']
     )
     answer_reveal_9 = game_state.AnswerReveal(
-        game_start_offset=265, question=question_9, correct_answer_ind=0
+        game_start_offset=265, question=question_9, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_9 = game_state.QuestionFact(
         game_start_offset=270,
@@ -120,7 +129,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Vitiligo', 'Argyria', 'Pemphigus']
     )
     answer_reveal_10 = game_state.AnswerReveal(
-        game_start_offset=295, question=question_10, correct_answer_ind=0
+        game_start_offset=295, question=question_10, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_10 = game_state.QuestionFact(
         game_start_offset=300,
@@ -132,7 +142,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Moose', 'Tortoise', 'Hippopotamus']
     )
     answer_reveal_11 = game_state.AnswerReveal(
-        game_start_offset=325, question=question_11, correct_answer_ind=0
+        game_start_offset=325, question=question_11, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_11 = game_state.QuestionFact(
         game_start_offset=330,
@@ -144,7 +155,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
         answers=['Ever Ace', 'Ever Aim', 'HMM Algeciras']
     )
     answer_reveal_12 = game_state.AnswerReveal(
-        game_start_offset=355, question=question_12, correct_answer_ind=0
+        game_start_offset=355, question=question_12, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_12 = game_state.QuestionFact(
         game_start_offset=360,
