@@ -59,6 +59,13 @@ def remove_current_mark(redis_conn: Redis, id: str):
     redis_conn.delete(_CURRENT_GAME_ID_REDIS_KEY)
 
 
+def is_game_current(redis_conn: Redis, id: str) -> bool:
+    saved_game_id = redis_conn.get(_CURRENT_GAME_ID_REDIS_KEY)
+    if not saved_game_id:
+        return False
+    return saved_game_id.decode('utf-8') == id
+
+
 def get_current(redis_conn: Redis) -> Optional[Game]:
     saved_game_id = redis_conn.get(_CURRENT_GAME_ID_REDIS_KEY)
     if not saved_game_id:

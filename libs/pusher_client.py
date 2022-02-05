@@ -1,6 +1,8 @@
 import os
 from pusher import Pusher
 
+CHAT_MESSAGE_EVENT_NAME = 'new_message'
+
 
 def get_pusher_client() -> Pusher:
     return Pusher(

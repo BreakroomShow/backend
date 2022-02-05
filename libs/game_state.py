@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Union, Dict
 from pydantic import BaseModel
+from models import chat_message
 
 
 class EventType(Enum):
@@ -9,6 +10,8 @@ class EventType(Enum):
     crypto_fact = 'crypto_fact'
     question = 'question'
     answer_reveal = 'answer_reveal'
+    planned_chat_message = 'planned_chat_message'
+    viewer_count_update = 'viewer_count_update'
 
 
 class DistributionType(Enum):
@@ -19,7 +22,7 @@ class DistributionType(Enum):
 class BaseEvent(BaseModel):
     type: EventType
     distribution_type: DistributionType
-    duration: float
+    duration: Optional[float]  # None if event should only update the state
     game_start_offset: float
 
     class Config:
@@ -67,7 +70,25 @@ class CryptoFact(BaseEvent):
     image_url: Optional[str]
 
 
-AnyEvent = Union[Question, AnswerReveal, GameInfoSplash, QuestionFact, CryptoFact]
+class PlannedChatMessage(BaseEvent):
+    type = EventType.planned_chat_message
+    distribution_type = DistributionType.socket
+    duration: Optional[float] = None
+    text: str
+    from_id: str
+
+    def to_message(self):
+        return chat_message.ChatMessage(text=self.text, from_id=self.from_id)
+
+
+class ViewerCountUpdate(BaseEvent):
+    type = EventType.viewer_count_update
+    distribution_type = DistributionType.socket
+    duration: Optional[float] = None
+    viewer_count: int
+
+
+AnyEvent = Union[Question, AnswerReveal, GameInfoSplash, QuestionFact, CryptoFact, PlannedChatMessage, ViewerCountUpdate]
 
 
 class Scenario(BaseModel):

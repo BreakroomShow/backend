@@ -13,7 +13,7 @@ from solana.rpc.types import TxOpts
 from solana.transaction import Transaction
 from anchorpy import Program, Provider, Wallet, Idl, Context
 
-_DEVNET_DEPLOYED_PROGRAM_ID = "F6JZ61gqo32Mwv4XBwGsVmamsaZCgyVoz8VUvefsqUhm"
+_DEVNET_DEPLOYED_PROGRAM_ID = "ANJEwjiYZTmsMkXfgvFGPcEEQ52sXgehC7oBWzJxtFUZ"
 
 TRIVIA = b'trivia'
 GAME = b'game'
@@ -24,7 +24,7 @@ PLAYER = b'player'
 async def main():
     client = AsyncClient("https://api.devnet.solana.com")
     provider = Provider(client, _authority_wallet())
-    program_id = PublicKey("F6JZ61gqo32Mwv4XBwGsVmamsaZCgyVoz8VUvefsqUhm")
+    program_id = PublicKey("ANJEwjiYZTmsMkXfgvFGPcEEQ52sXgehC7oBWzJxtFUZ")
     program = Program(_idl(), program_id, provider)
     # Execute the RPC.
     await program.rpc["initialize"]()
@@ -34,7 +34,7 @@ async def main():
 
 async def get_program() -> Program:
     client = AsyncClient("https://api.devnet.solana.com")
-    provider = Provider(client, _authority_wallet(), TxOpts())
+    provider = Provider(client, _authority_wallet(), TxOpts(skip_preflight=True))
     program_id = PublicKey(_DEVNET_DEPLOYED_PROGRAM_ID)
     program = Program(_idl(), program_id, provider)
 

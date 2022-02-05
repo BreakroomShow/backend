@@ -1,8 +1,10 @@
 import asyncio
 from datetime import datetime
+from typing import List
 import time
 from libs import game_state, authority_solana, pusher_client, redis_connection
 from models import game, replay
+from solana.keypair import Keypair
 
 
 def _get_demo_scenario_1() -> game_state.Scenario:
@@ -185,11 +187,47 @@ def _distribute_chain_event(program: authority_solana.Program, event: game_state
 
 
 def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: game.Game, event: game_state.AnyEvent):
-    pusher_conn.trigger(active_game.socket_key(), event.type.value, event.dict())
+    pusher_type = event.type.value
+    pusher_data = event.dict()
+
+    if event.type == game_state.EventType.planned_chat_message:
+        pusher_type = pusher_client.CHAT_MESSAGE_EVENT_NAME
+        pusher_data = event.to_message().dict()
+
+    pusher_conn.trigger(active_game.socket_key(), pusher_type, pusher_data)
+
+
+def _generate_chat_messages() -> List[game_state.PlannedChatMessage]:
+    planned_messages = []
+    for line in open('demo_game_comments.txt'):
+        offset, text = line.strip().split(' ', maxsplit=1)
+        planned_messages.append(game_state.PlannedChatMessage(
+            text=text,
+            from_id=str(Keypair.generate().public_key),
+            game_start_offset=int(offset),
+        ))
+    return planned_messages
+
+
+def _generate_viewer_counter_updates(
+    game_duration: int, update_interval: int, first_question_at: int,
+    finish_players: int, max_players: int,
+) -> List[game_state.ViewerCountUpdate]:
+    updates = []
+    current_offset = 0
+    while current_offset < game_duration:
+        if current_offset < first_question_at:  # X / current_offset = max_players / first_question_at
+            viewer_count = current_offset * max_players / first_question_at
+        else:  # X / (current_offset - first_question_at) = (max_players - finish_players) / (game_duration - first_question_at)
+            decreased_by = (current_offset - first_question_at) * (max_players - finish_players) / (game_duration - first_question_at)
+            viewer_count = max_players - decreased_by
+        updates.append(game_state.ViewerCountUpdate(game_start_offset=current_offset, viewer_count=int(viewer_count)))
+        current_offset += update_interval
+    return updates
 
 
 async def main():
-    interval = 600
+    interval = 5
     redis_conn = redis_connection.get()
     pusher_conn = pusher_client.get_pusher_client()
 
@@ -210,6 +248,22 @@ async def main():
 
         scenario = _get_demo_scenario_1()
         scenario.events = sorted(scenario.events, key=lambda e: e.game_start_offset)
+
+        scenario.events = sorted(
+            scenario.events +
+            _generate_chat_messages() +
+            _generate_viewer_counter_updates(
+                game_duration=int(scenario.events[-1].game_start_offset + scenario.events[-1].duration),
+                update_interval=2,
+                first_question_at=int(
+                    list(filter(lambda event: event.type == game_state.EventType.question, scenario.events))
+                    [0].game_start_offset
+                ),
+                finish_players=102,
+                max_players=1021,
+            ),
+            key=lambda e: e.game_start_offset
+        )
 
         while scenario.events:
             next_event = scenario.events.pop(0)
