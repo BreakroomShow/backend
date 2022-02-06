@@ -78,7 +78,7 @@ class PlannedChatMessage(BaseEvent):
     from_id: str
 
     def to_message(self):
-        return chat_message.ChatMessage(text=self.text, from_id=self.from_id)
+        return chat_message.ChatMessage(id=None, text=self.text, from_id=self.from_id)
 
 
 class ViewerCountUpdate(BaseEvent):

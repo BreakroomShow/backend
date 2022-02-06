@@ -24,7 +24,7 @@ def create_new_message(
     if not game.is_game_current(redis_conn, game_id):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST)
 
-    message = chat_message.ChatMessage(text=text, from_id=credentials.id)
+    message = chat_message.ChatMessage(id=None, text=text, from_id=credentials.id)
 
     pusher_conn.trigger(current_game.socket_key(), pusher_client.CHAT_MESSAGE_EVENT_NAME, message.dict())
     replay.record_chat_message(redis_conn, game_id, time.time(), message)
