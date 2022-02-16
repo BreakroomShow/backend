@@ -50,13 +50,13 @@ class AnswerReveal(BaseEvent):
 class IntroSplash(BaseEvent):
     type = EventType.intro_splash
     distribution_type = DistributionType.socket
-    duration = 10
+    duration = 10.0
 
 
 class GameInfoSplash(BaseEvent):
     type = EventType.game_info_splash
     distribution_type = DistributionType.socket
-    duration = 10
+    duration = 10.0
     players: int
     prize_fund_usd: int
     sponsor_title: str
