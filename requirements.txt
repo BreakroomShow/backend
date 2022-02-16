@@ -14,3 +14,4 @@ pusher_push_notifications
 python-telegram-bot
 ipython-profile
 requests
+pydantic[email]
