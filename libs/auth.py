@@ -73,5 +73,3 @@ def get_credentials(jwt_token: str = Depends(oauth2_scheme)) -> Credentials:
     return Credentials(
         id=public_address_base58
     )
-
-

@@ -1,4 +1,3 @@
-import json
 from fastapi import APIRouter, Request
 from libs import fee_payer
 
