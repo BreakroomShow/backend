@@ -95,7 +95,7 @@ class ViewerCountUpdate(BaseEvent):
     viewer_count: int
 
 
-AnyEvent = Union[Question, AnswerReveal, GameInfoSplash, QuestionFact, CryptoFact, PlannedChatMessage, ViewerCountUpdate]
+AnyEvent = Union[Question, AnswerReveal, IntroSplash, GameInfoSplash, QuestionFact, CryptoFact, PlannedChatMessage, ViewerCountUpdate]
 
 
 class Scenario(BaseModel):
