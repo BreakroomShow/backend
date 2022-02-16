@@ -5,6 +5,7 @@ from models import chat_message
 
 
 class EventType(Enum):
+    intro_splash = 'intro_splash'
     game_info_splash = 'game_info_splash'
     question_fact = 'question_fact'
     crypto_fact = 'crypto_fact'
@@ -46,10 +47,16 @@ class AnswerReveal(BaseEvent):
     answer_count: Dict[int, int]  # ind => count
 
 
+class IntroSplash(BaseEvent):
+    type = EventType.intro_splash
+    distribution_type = DistributionType.socket
+    duration = 10
+
+
 class GameInfoSplash(BaseEvent):
     type = EventType.game_info_splash
     distribution_type = DistributionType.socket
-    duration = 5.0
+    duration = 10
     players: int
     prize_fund_usd: int
     sponsor_title: str
