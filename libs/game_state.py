@@ -5,7 +5,6 @@ from models import chat_message
 
 
 class EventType(Enum):
-    intro_splash = 'intro_splash'
     game_info_splash = 'game_info_splash'
     question_fact = 'question_fact'
     crypto_fact = 'crypto_fact'
@@ -13,6 +12,7 @@ class EventType(Enum):
     answer_reveal = 'answer_reveal'
     planned_chat_message = 'planned_chat_message'
     viewer_count_update = 'viewer_count_update'
+    intro_splash = 'intro_splash'
 
 
 class DistributionType(Enum):
@@ -95,7 +95,7 @@ class ViewerCountUpdate(BaseEvent):
     viewer_count: int
 
 
-AnyEvent = Union[Question, AnswerReveal, IntroSplash, GameInfoSplash, QuestionFact, CryptoFact, PlannedChatMessage, ViewerCountUpdate]
+AnyEvent = Union[Question, AnswerReveal, GameInfoSplash, IntroSplash, QuestionFact, CryptoFact, PlannedChatMessage, ViewerCountUpdate]
 
 
 class Scenario(BaseModel):
