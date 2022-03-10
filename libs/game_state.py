@@ -99,4 +99,4 @@ AnyEvent = Union[Question, AnswerReveal, GameInfoSplash, IntroSplash, QuestionFa
 
 
 class Scenario(BaseModel):
-    events: List[AnyEvent]
+    events: List[BaseEvent]
