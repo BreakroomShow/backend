@@ -7,7 +7,7 @@ from models import replay
 router = APIRouter()
 
 
-@router.get('/replays/last', response_model=replay.Replay)
+@router.get('/replays/last')
 def get_last(redis_conn: redis_connection.Redis = Depends(redis_connection.get)):
     last_replay = replay.get_last(redis_conn)
     if not last_replay:
