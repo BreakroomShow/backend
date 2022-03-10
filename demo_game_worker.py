@@ -228,7 +228,7 @@ def _generate_viewer_counter_updates(
 
 
 async def main():
-    interval = 5
+    interval = 600
     redis_conn = redis_connection.get()
     pusher_conn = pusher_client.get_pusher_client()
 

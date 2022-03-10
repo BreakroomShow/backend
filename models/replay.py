@@ -19,7 +19,7 @@ class ReplayChatMessage(BaseModel):
 
 
 class ReplayEvent(BaseModel):
-    event: game_state.AnyEvent
+    event: game_state.BaseEvent
     timestamp: float
 
 
