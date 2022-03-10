@@ -97,6 +97,17 @@ class ViewerCountUpdate(BaseEvent):
 
 AnyEvent = Union[Question, AnswerReveal, GameInfoSplash, IntroSplash, QuestionFact, CryptoFact, PlannedChatMessage, ViewerCountUpdate]
 
+EVENT_TYPE_TO_CLASS = {
+    EventType.game_info_splash: GameInfoSplash,
+    EventType.question_fact: QuestionFact,
+    EventType.crypto_fact: CryptoFact,
+    EventType.question: Question,
+    EventType.answer_reveal: AnswerReveal,
+    EventType.planned_chat_message: PlannedChatMessage,
+    EventType.viewer_count_update: ViewerCountUpdate,
+    EventType.intro_splash: IntroSplash,
+}
+
 
 class Scenario(BaseModel):
     events: List[BaseEvent]

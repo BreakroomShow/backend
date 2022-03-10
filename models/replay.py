@@ -1,5 +1,5 @@
 import json
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel
 from redis import Redis
 
@@ -61,8 +61,11 @@ def get_by_game_id(redis_conn: Redis, game_id: str) -> Optional[Replay]:
     finished_at_timestamp = float(finished_at_timestamp)
 
     replay_events = [
-        ReplayEvent(**json.loads(replay_event.decode('utf-8')))
-        for replay_event in redis_conn.lrange(_EVENTS_LIST_REDIS_KEY + game_id, 0, -1)
+        ReplayEvent(
+            event=game_state.EVENT_TYPE_TO_CLASS[game_state.EventType(replay_event['event']['type'])](**replay_event['event']),
+            timestamp=replay_event['timestamp']
+        )
+        for replay_event in map(json.loads, redis_conn.lrange(_EVENTS_LIST_REDIS_KEY + game_id, 0, -1))
     ]
     chat_messages = [
         ReplayChatMessage(**json.loads(chat_message.decode('utf-8')))
