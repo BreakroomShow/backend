@@ -74,7 +74,6 @@ class CryptoFact(BaseEvent):
     type = EventType.crypto_fact
     distribution_type = DistributionType.socket
     text: str
-    image_url: Optional[str]
 
 
 class PlannedChatMessage(BaseEvent):

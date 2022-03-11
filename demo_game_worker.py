@@ -8,165 +8,171 @@ from solana.keypair import Keypair
 
 
 def _get_demo_scenario_1() -> game_state.Scenario:
-    intro = game_state.IntroSplash(game_start_offset=0)
-    game_info_splash = game_state.GameInfoSplash(game_start_offset=10, players=1000, prize_fund_usd=300, sponsor_title='Dnevnichok')
+    tip_1 = game_state.CryptoFact(game_start_offset=0, text='don’t enter your seed phrase anywhere, but trusted wallets')
+    tip_2 = game_state.CryptoFact(game_start_offset=10, text='if someone dms you on discord, it’s probably scam')
+    tip_3 = game_state.CryptoFact(game_start_offset=20, text='check the urls of the apps you use')
+    tip_4 = game_state.CryptoFact(game_start_offset=30, text='use new wallets for untrusted apps')
+
+    intro = game_state.IntroSplash(game_start_offset=40)
+    game_info_splash = game_state.GameInfoSplash(game_start_offset=50, players=1000, prize_fund_usd=300, sponsor_title='Dnevnichok')
 
     question_1 = game_state.Question(
-        game_start_offset=20, question='Cristiano Ronaldo plays which sport?',
+        game_start_offset=60, question='Cristiano Ronaldo plays which sport?',
         answers=['Soccer', 'Basketball', 'Baseball']
     )
     answer_reveal_1 = game_state.AnswerReveal(
-        game_start_offset=35, question=question_1, correct_answer_ind=0,
+        game_start_offset=75, question=question_1, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_1 = game_state.QuestionFact(
-        game_start_offset=40, text='Ronaldo has made over $1 billion in career earnings, the first team sport athlete to hit the milestone.'
+        game_start_offset=80, text='Ronaldo has made over $1 billion in career earnings, the first team sport athlete to hit the milestone.'
     )
 
     question_2 = game_state.Question(
-        game_start_offset=50, question='Which of these countries is not in Europe?',
+        game_start_offset=90, question='Which of these countries is not in Europe?',
         answers=['Zimbabwe', 'France', 'Spain']
     )
     answer_reveal_2 = game_state.AnswerReveal(
-        game_start_offset=65, question=question_2, correct_answer_ind=0,
+        game_start_offset=105, question=question_2, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_2 = game_state.QuestionFact(
-        game_start_offset=70,
+        game_start_offset=110,
         text='Due to inflation, 100 trillion dollar bills are common in Zimbabwe.'
     )
 
     question_3 = game_state.Question(
-        game_start_offset=80, question='The iPhone is made by which of these companies? ',
+        game_start_offset=120, question='The iPhone is made by which of these companies? ',
         answers=['Apple', 'Ford', 'Lipton']
     )
     answer_reveal_3 = game_state.AnswerReveal(
-        game_start_offset=95, question=question_3, correct_answer_ind=0,
+        game_start_offset=135, question=question_3, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_3 = game_state.QuestionFact(
-        game_start_offset=100,
+        game_start_offset=140,
         text='Current iPhones have over 100,000x the processing power of the computer on board the Apollo 11 spacecraft. '
     )
 
     question_4 = game_state.Question(
-        game_start_offset=110, question='Which of these comic book characters is a part of the Avengers?',
+        game_start_offset=150, question='Which of these comic book characters is a part of the Avengers?',
         answers=['Captain America', 'Superman', 'Charlie Brown']
     )
     answer_reveal_4 = game_state.AnswerReveal(
-        game_start_offset=125, question=question_4, correct_answer_ind=0,
+        game_start_offset=165, question=question_4, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_4 = game_state.QuestionFact(
-        game_start_offset=130,
+        game_start_offset=170,
         text='Chris Evans turned down the role of Captain America three times before finally donning the iconic stars and stripes.'
     )
 
     question_5 = game_state.Question(
-        game_start_offset=140, question='What song has spent the longest time at #1 on the Billboard Hot 100?',
+        game_start_offset=180, question='What song has spent the longest time at #1 on the Billboard Hot 100?',
         answers=['Old Town Road', 'Despactio', 'Uptown Funk']
     )
     answer_reveal_5 = game_state.AnswerReveal(
-        game_start_offset=155, question=question_5, correct_answer_ind=0,
+        game_start_offset=195, question=question_5, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_5 = game_state.QuestionFact(
-        game_start_offset=160,
+        game_start_offset=200,
         text='Lil Nas X has released 6 official remixes to "Old Town Road", the biggest with Billy Ray Cyrus.'
     )
 
     question_6 = game_state.Question(
-        game_start_offset=170, question='After a kidney transplant, how many kidneys does someone typically have?',
+        game_start_offset=210, question='After a kidney transplant, how many kidneys does someone typically have?',
         answers=['3', '2', '1']
     )
     answer_reveal_6 = game_state.AnswerReveal(
-        game_start_offset=185, question=question_6, correct_answer_ind=0,
+        game_start_offset=225, question=question_6, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_6 = game_state.QuestionFact(
-        game_start_offset=190,
+        game_start_offset=230,
         text='Doctors typically put the third kidney in the patient\'s pelvis, leaving the original two kidneys where they are.'
     )
 
     question_7 = game_state.Question(
-        game_start_offset=200, question='Kim Il-Sung founded which country?',
+        game_start_offset=240, question='Kim Il-Sung founded which country?',
         answers=['North Korea', 'Singapore', 'Myanmar']
     )
     answer_reveal_7 = game_state.AnswerReveal(
-        game_start_offset=215, question=question_7, correct_answer_ind=0,
+        game_start_offset=255, question=question_7, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_7 = game_state.QuestionFact(
-        game_start_offset=220,
+        game_start_offset=260,
         text='Kim Il-Sung had a baseball sized tumor on the back of his head, resulting in all propaganda photos taken of him from the left side to cover it up.'
     )
 
     question_8 = game_state.Question(
-        game_start_offset=230, question='What is the name of this iconic 1997 film starring Kate Winslet and Leonardo DiCaprio?',
+        game_start_offset=270, question='What is the name of this iconic 1997 film starring Kate Winslet and Leonardo DiCaprio?',
         answers=['Titanic', 'The Departed', 'Catch Me If You Can']
     )
     answer_reveal_8 = game_state.AnswerReveal(
-        game_start_offset=245, question=question_8, correct_answer_ind=0,
+        game_start_offset=285, question=question_8, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_8 = game_state.QuestionFact(
-        game_start_offset=250,
+        game_start_offset=290,
         text='Titanic was the highest grossing movie of all time until it was surpassed in 2010 by James Cameron\'s Avatar.'
     )
 
     question_9 = game_state.Question(
-        game_start_offset=260, question='In WWII, the Germans constructed a giant railway gun named what?',
+        game_start_offset=300, question='In WWII, the Germans constructed a giant railway gun named what?',
         answers=['Schwerer Gustav', 'Kleiner Goliath', 'Stolz Freude']
     )
     answer_reveal_9 = game_state.AnswerReveal(
-        game_start_offset=275, question=question_9, correct_answer_ind=0,
+        game_start_offset=315, question=question_9, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_9 = game_state.QuestionFact(
-        game_start_offset=280,
+        game_start_offset=320,
         text='The largest gun ever built, the Gustav could fire 7 ton rounds up to 29 miles away.'
     )
 
     question_10 = game_state.Question(
-        game_start_offset=290, question='What was the name of entertainer Michael Jackson\'s rare skin disease?',
+        game_start_offset=330, question='What was the name of entertainer Michael Jackson\'s rare skin disease?',
         answers=['Vitiligo', 'Argyria', 'Pemphigus']
     )
     answer_reveal_10 = game_state.AnswerReveal(
-        game_start_offset=305, question=question_10, correct_answer_ind=0,
+        game_start_offset=345, question=question_10, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_10 = game_state.QuestionFact(
-        game_start_offset=310,
+        game_start_offset=350,
         text='Michael Jackson\'s interview with Oprah where he revealed he had the condition was the most watched interview ever with 90 million viewers.'
     )
 
     question_11 = game_state.Question(
-        game_start_offset=320, question='Which of these animals can dive nearly 20 feet below water for food?',
+        game_start_offset=360, question='Which of these animals can dive nearly 20 feet below water for food?',
         answers=['Moose', 'Tortoise', 'Hippopotamus']
     )
     answer_reveal_11 = game_state.AnswerReveal(
-        game_start_offset=335, question=question_11, correct_answer_ind=0,
+        game_start_offset=375, question=question_11, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_11 = game_state.QuestionFact(
-        game_start_offset=340,
+        game_start_offset=380,
         text='When colder weather comes, moose typically feast on the aquatic vegetation found at the bottom of lakes.'
     )
 
     question_12 = game_state.Question(
-        game_start_offset=350, question='What is the name of the biggest cargo ship in the world?',
+        game_start_offset=390, question='What is the name of the biggest cargo ship in the world?',
         answers=['Ever Ace', 'Ever Aim', 'HMM Algeciras']
     )
     answer_reveal_12 = game_state.AnswerReveal(
-        game_start_offset=365, question=question_12, correct_answer_ind=0,
+        game_start_offset=405, question=question_12, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50}
     )
     fact_12 = game_state.QuestionFact(
-        game_start_offset=370,
+        game_start_offset=410,
         text='The Ever Ace can hold up to 23,992 containers of cargo, nearly half a million tons.'
     )
 
     return game_state.Scenario(events=[
+        tip_1, tip_2, tip_3, tip_4,
         intro, game_info_splash,
         question_1, answer_reveal_1, fact_1,
         question_2, answer_reveal_2, fact_2,
