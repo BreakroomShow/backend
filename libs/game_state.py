@@ -74,6 +74,7 @@ class CryptoFact(BaseEvent):
     type = EventType.crypto_fact
     distribution_type = DistributionType.socket
     text: str
+    duration = 10
 
 
 class PlannedChatMessage(BaseEvent):
