@@ -14,6 +14,7 @@ class Game(BaseModel):
     id: str
     chain_name: str
     chain_start_time: datetime
+    game_index: int
 
     class Config:
         validate_assignment = True
@@ -31,7 +32,7 @@ class Game(BaseModel):
             value = datetime.utcfromtimestamp(value)
         return value.replace(tzinfo=timezone.utc)
 
-    def socket_key(self):
+    def socket_key(self) -> str:
         return f'socket_{self.id}'
 
 

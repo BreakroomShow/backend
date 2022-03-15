@@ -2,9 +2,10 @@ import asyncio
 from datetime import datetime
 from typing import List
 import time
+import pytz
+from solana.keypair import Keypair
 from libs import game_state, authority_solana, pusher_client, redis_connection
 from models import game, replay
-from solana.keypair import Keypair
 
 
 def _get_demo_scenario_1() -> game_state.Scenario:
@@ -18,11 +19,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_1 = game_state.Question(
         game_start_offset=60, question='Cristiano Ronaldo plays which sport?',
-        answers=['Soccer', 'Basketball', 'Baseball']
+        answers=['Soccer', 'Basketball', 'Baseball'],
     )
     answer_reveal_1 = game_state.AnswerReveal(
         game_start_offset=75, question=question_1, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_1 = game_state.QuestionFact(
         game_start_offset=80, text='Ronaldo has made over $1 billion in career earnings, the first team sport athlete to hit the milestone.'
@@ -30,11 +31,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_2 = game_state.Question(
         game_start_offset=90, question='Which of these countries is not in Europe?',
-        answers=['Zimbabwe', 'France', 'Spain']
+        answers=['Zimbabwe', 'France', 'Spain'],
     )
     answer_reveal_2 = game_state.AnswerReveal(
         game_start_offset=105, question=question_2, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_2 = game_state.QuestionFact(
         game_start_offset=110,
@@ -43,11 +44,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_3 = game_state.Question(
         game_start_offset=120, question='The iPhone is made by which of these companies? ',
-        answers=['Apple', 'Ford', 'Lipton']
+        answers=['Apple', 'Ford', 'Lipton'],
     )
     answer_reveal_3 = game_state.AnswerReveal(
         game_start_offset=135, question=question_3, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_3 = game_state.QuestionFact(
         game_start_offset=140,
@@ -56,11 +57,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_4 = game_state.Question(
         game_start_offset=150, question='Which of these comic book characters is a part of the Avengers?',
-        answers=['Captain America', 'Superman', 'Charlie Brown']
+        answers=['Captain America', 'Superman', 'Charlie Brown'],
     )
     answer_reveal_4 = game_state.AnswerReveal(
         game_start_offset=165, question=question_4, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_4 = game_state.QuestionFact(
         game_start_offset=170,
@@ -69,11 +70,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_5 = game_state.Question(
         game_start_offset=180, question='What song has spent the longest time at #1 on the Billboard Hot 100?',
-        answers=['Old Town Road', 'Despactio', 'Uptown Funk']
+        answers=['Old Town Road', 'Despactio', 'Uptown Funk'],
     )
     answer_reveal_5 = game_state.AnswerReveal(
         game_start_offset=195, question=question_5, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_5 = game_state.QuestionFact(
         game_start_offset=200,
@@ -82,11 +83,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_6 = game_state.Question(
         game_start_offset=210, question='After a kidney transplant, how many kidneys does someone typically have?',
-        answers=['3', '2', '1']
+        answers=['3', '2', '1'],
     )
     answer_reveal_6 = game_state.AnswerReveal(
         game_start_offset=225, question=question_6, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_6 = game_state.QuestionFact(
         game_start_offset=230,
@@ -95,11 +96,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_7 = game_state.Question(
         game_start_offset=240, question='Kim Il-Sung founded which country?',
-        answers=['North Korea', 'Singapore', 'Myanmar']
+        answers=['North Korea', 'Singapore', 'Myanmar'],
     )
     answer_reveal_7 = game_state.AnswerReveal(
         game_start_offset=255, question=question_7, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_7 = game_state.QuestionFact(
         game_start_offset=260,
@@ -108,11 +109,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_8 = game_state.Question(
         game_start_offset=270, question='What is the name of this iconic 1997 film starring Kate Winslet and Leonardo DiCaprio?',
-        answers=['Titanic', 'The Departed', 'Catch Me If You Can']
+        answers=['Titanic', 'The Departed', 'Catch Me If You Can'],
     )
     answer_reveal_8 = game_state.AnswerReveal(
         game_start_offset=285, question=question_8, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_8 = game_state.QuestionFact(
         game_start_offset=290,
@@ -121,11 +122,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_9 = game_state.Question(
         game_start_offset=300, question='In WWII, the Germans constructed a giant railway gun named what?',
-        answers=['Schwerer Gustav', 'Kleiner Goliath', 'Stolz Freude']
+        answers=['Schwerer Gustav', 'Kleiner Goliath', 'Stolz Freude'],
     )
     answer_reveal_9 = game_state.AnswerReveal(
         game_start_offset=315, question=question_9, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_9 = game_state.QuestionFact(
         game_start_offset=320,
@@ -134,11 +135,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_10 = game_state.Question(
         game_start_offset=330, question='What was the name of entertainer Michael Jackson\'s rare skin disease?',
-        answers=['Vitiligo', 'Argyria', 'Pemphigus']
+        answers=['Vitiligo', 'Argyria', 'Pemphigus'],
     )
     answer_reveal_10 = game_state.AnswerReveal(
         game_start_offset=345, question=question_10, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_10 = game_state.QuestionFact(
         game_start_offset=350,
@@ -147,11 +148,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_11 = game_state.Question(
         game_start_offset=360, question='Which of these animals can dive nearly 20 feet below water for food?',
-        answers=['Moose', 'Tortoise', 'Hippopotamus']
+        answers=['Moose', 'Tortoise', 'Hippopotamus'],
     )
     answer_reveal_11 = game_state.AnswerReveal(
         game_start_offset=375, question=question_11, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_11 = game_state.QuestionFact(
         game_start_offset=380,
@@ -160,11 +161,11 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 
     question_12 = game_state.Question(
         game_start_offset=390, question='What is the name of the biggest cargo ship in the world?',
-        answers=['Ever Ace', 'Ever Aim', 'HMM Algeciras']
+        answers=['Ever Ace', 'Ever Aim', 'HMM Algeciras'],
     )
     answer_reveal_12 = game_state.AnswerReveal(
         game_start_offset=405, question=question_12, correct_answer_ind=0,
-        answer_count={0: 100, 1: 75, 2: 50}
+        answer_count={0: 100, 1: 75, 2: 50},
     )
     fact_12 = game_state.QuestionFact(
         game_start_offset=410,
@@ -189,8 +190,24 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     ])
 
 
-def _distribute_chain_event(program: authority_solana.Program, event: game_state.AnyEvent):
-    pass
+async def _distribute_chain_event(program: authority_solana.Program, active_game: game.Game,
+                                  event: game_state.AnyEvent, question_keypair: Keypair):
+    print('[chain_distributing]', event)
+    if event.type == game_state.EventType.question:
+        await authority_solana.reveal_question(
+            program=program,
+            game_index=active_game.game_index,
+            keypair=question_keypair,
+            text=event.question,
+            variants=event.answers,
+        )
+    elif event.type == game_state.EventType.answer_reveal:
+        await authority_solana.reveal_answer(
+            program=program,
+            game_index=active_game.game_index,
+            keypair=question_keypair,
+            answer_variant_id=event.correct_answer_ind + 1
+        )
 
 
 def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: game.Game, event: game_state.AnyEvent):
@@ -233,6 +250,19 @@ def _generate_viewer_counter_updates(
     return updates
 
 
+async def _submit_questions_to_contract(program: authority_solana.Program, game: game.Game,
+                                        question_events: List[game_state.Question], question_keypairs: List[Keypair]):
+    for i, event in enumerate(question_events):
+        await authority_solana.add_question(
+            program=program,
+            game_index=game.game_index,
+            keypair=question_keypairs[i],
+            text=event.question,
+            variants=event.answers,
+            time=12,
+        )
+
+
 async def main():
     interval = 600
     redis_conn = redis_connection.get()
@@ -241,17 +271,20 @@ async def main():
     while True:
         program = await authority_solana.get_program()
 
-        next_game_start_timestamp = (int(time.time()) // interval) * interval + interval
-        new_game = game.Game(id=None, chain_name='Test game', chain_start_time=datetime.utcfromtimestamp(next_game_start_timestamp))
+        chain_name = 'Test game'
+        starts_at = datetime.utcfromtimestamp((int(time.time()) // interval) * interval + interval).replace(tzinfo=pytz.UTC)
+        game_index = await authority_solana.create_game(
+            program,
+            name=chain_name,
+            start_time=starts_at,
+        )
+        new_game = game.Game(
+            id=None,
+            chain_name=chain_name,
+            chain_start_time=starts_at,
+            game_index=game_index,
+        )
         game.create(redis_conn, new_game)
-        # await authority_solana.create_game(
-        #     program,
-        #     name=new_game.chain_name,
-        #     start_time=new_game.chain_start_time,
-        # )
-        await asyncio.sleep(max(next_game_start_timestamp - time.time(), 0))
-        game.mark_current(redis_conn, new_game.id)
-        replay.record_start(redis_conn, new_game.id, time.time())
 
         scenario = _get_demo_scenario_1()
         scenario.events = sorted(scenario.events, key=lambda e: e.game_start_offset)
@@ -272,17 +305,37 @@ async def main():
             key=lambda e: e.game_start_offset
         )
 
+        question_keypairs = [Keypair.generate() for _ in range(12)]
+        current_question = 0
+
+        await asyncio.sleep(5)  # Give time to confirm previous transactions
+
+        await _submit_questions_to_contract(
+            program,
+            new_game,
+            [event for event in scenario.events if type(event) == game_state.Question],
+            question_keypairs
+        )
+
+        await asyncio.sleep(5)  # Give time to confirm previous transactions
+
+        await asyncio.sleep(max(new_game.chain_start_time.timestamp() - time.time(), 0))
+        game.mark_current(redis_conn, new_game.id)
+        replay.record_start(redis_conn, new_game.id, time.time())
+
         while scenario.events:
             next_event = scenario.events.pop(0)
-            current_offset = time.time() - next_game_start_timestamp
+            current_offset = time.time() - new_game.chain_start_time.timestamp()
             await asyncio.sleep(max(next_event.game_start_offset - current_offset, 0))
 
             if next_event.distribution_type == game_state.DistributionType.chain:
-                _distribute_chain_event(program, next_event)
+                await _distribute_chain_event(program, new_game, next_event, question_keypairs[current_question])
             elif next_event.distribution_type == game_state.DistributionType.socket:
                 _distribute_socket_event(pusher_conn, new_game, next_event)
 
             replay.record_event(redis_conn, new_game.id, time.time(), next_event)
+            if next_event.type == game_state.EventType.answer_reveal:
+                current_question += 1
 
         game.remove_current_mark(redis_conn, new_game.id)
         replay.record_finish(redis_conn, new_game.id, time.time())

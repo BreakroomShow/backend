@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Union, Dict
 from pydantic import BaseModel
+from solana.keypair import Keypair
 from models import chat_message
 
 
@@ -28,6 +29,7 @@ class BaseEvent(BaseModel):
 
     class Config:
         use_enum_values = True
+        arbitrary_types_allowed = True
 
 
 class Question(BaseEvent):
