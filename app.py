@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,4 +24,4 @@ app.include_router(notifications.router)
 app.include_router(replays.router)
 app.include_router(telegram_bot.router)
 
-telegram_bot_lib.register(telegram_bot_lib.get_instance(), '/telegramBot/update')
+telegram_bot_lib.register(telegram_bot_lib.get_instance(), f'/telegramBot/update?secret={os.environ["TELEGRAM_BOT_URL_SECRET"]}')
