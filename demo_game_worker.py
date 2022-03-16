@@ -285,6 +285,7 @@ async def main():
             game_index=game_index,
         )
         game.create(redis_conn, new_game)
+        game.mark_current(redis_conn, new_game.id)
 
         scenario = _get_demo_scenario_1()
         scenario.events = sorted(scenario.events, key=lambda e: e.game_start_offset)
@@ -320,7 +321,6 @@ async def main():
         await asyncio.sleep(5)  # Give time to confirm previous transactions
 
         await asyncio.sleep(max(new_game.chain_start_time.timestamp() - time.time(), 0))
-        game.mark_current(redis_conn, new_game.id)
         replay.record_start(redis_conn, new_game.id, time.time())
 
         while scenario.events:
