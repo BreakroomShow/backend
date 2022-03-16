@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 
 import base58
 import jwt
@@ -23,7 +24,7 @@ Issued At: {issued_at}
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/account/token")
 
-_JWT_SIGNATURE_SECRET = 'Dn3f5UQuDHWjDLaGWUATvxbgtXZW6Abc3zq3J'
+_JWT_SIGNATURE_SECRET = os.environ['JWT_SIGNATURE_SECRET']
 _JWT_TOKEN_TTL_DAYS = 30
 
 
