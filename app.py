@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import account, chats, fee_payer, games, notifications, replays, telegram_bot
+from api import account, chats, games, notifications, replays, telegram_bot
 from libs import telegram_bot as telegram_bot_lib
 
 app = FastAPI()
@@ -17,7 +17,6 @@ app.add_middleware(
 
 app.include_router(account.router)
 app.include_router(chats.router)
-app.include_router(fee_payer.router)
 app.include_router(games.router)
 app.include_router(notifications.router)
 app.include_router(replays.router)
