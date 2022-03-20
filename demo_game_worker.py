@@ -190,8 +190,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     ])
 
 
-async def _distribute_chain_event(program: authority_solana.Program, active_game: game.Game,
-                                  event: game_state.AnyEvent, question_keypair: Keypair):
+async def _distribute_chain_event(program: authority_solana.Program, pusher_conn: pusher_client.Pusher,
+                                  active_game: game.Game, event: game_state.AnyEvent, question_keypair: Keypair):
     print('[chain_distributing]', event)
     if event.type == game_state.EventType.question:
         await authority_solana.reveal_question(
@@ -208,6 +208,8 @@ async def _distribute_chain_event(program: authority_solana.Program, active_game
             keypair=question_keypair,
             answer_variant_id=event.correct_answer_ind + 1
         )
+
+    pusher_conn.trigger(active_game.socket_key(), event.type.value, event.dict())
 
 
 def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: game.Game, event: game_state.AnyEvent):
@@ -329,7 +331,7 @@ async def main():
             await asyncio.sleep(max(next_event.game_start_offset - current_offset, 0))
 
             if next_event.distribution_type == game_state.DistributionType.chain:
-                await _distribute_chain_event(program, new_game, next_event, question_keypairs[current_question])
+                await _distribute_chain_event(program, pusher_conn, new_game, next_event, question_keypairs[current_question])
             elif next_event.distribution_type == game_state.DistributionType.socket:
                 _distribute_socket_event(pusher_conn, new_game, next_event)
 
