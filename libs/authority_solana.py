@@ -13,7 +13,7 @@ from solana.rpc.types import TxOpts
 from solana.rpc.commitment import Confirmed
 from anchorpy import Program, Provider, Wallet, Idl, Context
 
-_DEVNET_DEPLOYED_PROGRAM_ID = "ANJEwjiYZTmsMkXfgvFGPcEEQ52sXgehC7oBWzJxtFUZ"
+_DEVNET_DEPLOYED_PROGRAM_ID = "Eb7ZLJqhTDmLDcoGbKUy6DKxSBraNEsfbDST4FWiXAwv"
 
 TRIVIA = b'trivia'
 GAME = b'game'
@@ -23,12 +23,17 @@ PLAYER = b'player'
 
 async def main():
     client = AsyncClient("https://api.devnet.solana.com")
-    provider = Provider(client, _authority_wallet())
-    program_id = PublicKey("ANJEwjiYZTmsMkXfgvFGPcEEQ52sXgehC7oBWzJxtFUZ")
+    provider = Provider(client, _authority_wallet(), TxOpts())
+    program_id = PublicKey("Eb7ZLJqhTDmLDcoGbKUy6DKxSBraNEsfbDST4FWiXAwv")
     program = Program(_idl(), program_id, provider)
-    # Execute the RPC.
-    await program.rpc["initialize"]()
-    # Close the underlying http client, otherwise we get warnings.
+    pda, bump = _trivia_pda(program_id)
+
+    await program.rpc["initialize"](bump, ctx=Context(accounts={
+        'trivia': pda,
+        'authority': provider.wallet.public_key,
+        'system_program': SYS_PROGRAM_ID
+    }, signers=[provider.wallet.payer]))
+
     await program.close()
 
 
@@ -38,23 +43,6 @@ async def get_program() -> Program:
     provider = Provider(client, _authority_wallet(), TxOpts())
     program_id = PublicKey(_DEVNET_DEPLOYED_PROGRAM_ID)
     program = Program(_idl(), program_id, provider)
-
-
-    # instruction = transfer(TransferParams(
-    #     from_pubkey=PublicKey('5GS7AaArNZ7L777SUj2NN12phRjj44GMM2gFM3vmzsdA'),
-    #     to_pubkey=PublicKey('56NjiE3vSnGWmu4Cmq4k5dA6oL4ZkAvD1TRdizxxXrnW'),
-    #     lamports=10000
-    # ))
-    # transaction = Transaction()
-    # transaction.add(instruction)
-    # result = await provider.send(transaction, signers=[provider.wallet.payer])
-    # print(result)
-
-    # await program.rpc["initialize"](trivia_bump, ctx=Context(accounts={
-    #     'trivia': trivia_pda,
-    #     'authority': provider.wallet.public_key,
-    #     'system_program': SYS_PROGRAM_ID
-    # }, signers=[provider.wallet.payer]))
 
     return program
 
