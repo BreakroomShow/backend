@@ -16,6 +16,7 @@ def get_current(redis_conn: redis_connection.Redis = Depends(redis_connection.ge
     return {
         'current_game': {
             'socket_key': current_game.socket_key(),
+            'game_index': current_game.game_index,
             'chain_start_time': current_game.chain_start_time,
         }
     }
