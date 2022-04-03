@@ -20,10 +20,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_1 = game_state.Question(
         game_start_offset=60, question='Cristiano Ronaldo plays which sport?',
         answers=['Soccer', 'Basketball', 'Baseball'],
+        question_index=0
     )
     answer_reveal_1 = game_state.AnswerReveal(
         game_start_offset=75, question=question_1, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=0
     )
     fact_1 = game_state.QuestionFact(
         game_start_offset=80, text='Ronaldo has made over $1 billion in career earnings, the first team sport athlete to hit the milestone.'
@@ -32,10 +34,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_2 = game_state.Question(
         game_start_offset=90, question='Which of these countries is not in Europe?',
         answers=['Zimbabwe', 'France', 'Spain'],
+        question_index=1
     )
     answer_reveal_2 = game_state.AnswerReveal(
         game_start_offset=105, question=question_2, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=1
     )
     fact_2 = game_state.QuestionFact(
         game_start_offset=110,
@@ -45,10 +49,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_3 = game_state.Question(
         game_start_offset=120, question='The iPhone is made by which of these companies? ',
         answers=['Apple', 'Ford', 'Lipton'],
+        question_index=2
     )
     answer_reveal_3 = game_state.AnswerReveal(
         game_start_offset=135, question=question_3, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=2
     )
     fact_3 = game_state.QuestionFact(
         game_start_offset=140,
@@ -58,10 +64,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_4 = game_state.Question(
         game_start_offset=150, question='Which of these comic book characters is a part of the Avengers?',
         answers=['Captain America', 'Superman', 'Charlie Brown'],
+        question_index=3
     )
     answer_reveal_4 = game_state.AnswerReveal(
         game_start_offset=165, question=question_4, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=3
     )
     fact_4 = game_state.QuestionFact(
         game_start_offset=170,
@@ -71,10 +79,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_5 = game_state.Question(
         game_start_offset=180, question='What song has spent the longest time at #1 on the Billboard Hot 100?',
         answers=['Old Town Road', 'Despactio', 'Uptown Funk'],
+        question_index=4
     )
     answer_reveal_5 = game_state.AnswerReveal(
         game_start_offset=195, question=question_5, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=4
     )
     fact_5 = game_state.QuestionFact(
         game_start_offset=200,
@@ -84,10 +94,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_6 = game_state.Question(
         game_start_offset=210, question='After a kidney transplant, how many kidneys does someone typically have?',
         answers=['3', '2', '1'],
+        question_index=5
     )
     answer_reveal_6 = game_state.AnswerReveal(
         game_start_offset=225, question=question_6, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=5
     )
     fact_6 = game_state.QuestionFact(
         game_start_offset=230,
@@ -97,10 +109,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_7 = game_state.Question(
         game_start_offset=240, question='Kim Il-Sung founded which country?',
         answers=['North Korea', 'Singapore', 'Myanmar'],
+        question_index=6
     )
     answer_reveal_7 = game_state.AnswerReveal(
         game_start_offset=255, question=question_7, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=6
     )
     fact_7 = game_state.QuestionFact(
         game_start_offset=260,
@@ -110,10 +124,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_8 = game_state.Question(
         game_start_offset=270, question='What is the name of this iconic 1997 film starring Kate Winslet and Leonardo DiCaprio?',
         answers=['Titanic', 'The Departed', 'Catch Me If You Can'],
+        question_index=7
     )
     answer_reveal_8 = game_state.AnswerReveal(
         game_start_offset=285, question=question_8, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=7
     )
     fact_8 = game_state.QuestionFact(
         game_start_offset=290,
@@ -123,10 +139,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_9 = game_state.Question(
         game_start_offset=300, question='In WWII, the Germans constructed a giant railway gun named what?',
         answers=['Schwerer Gustav', 'Kleiner Goliath', 'Stolz Freude'],
+        question_index=8
     )
     answer_reveal_9 = game_state.AnswerReveal(
         game_start_offset=315, question=question_9, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=8
     )
     fact_9 = game_state.QuestionFact(
         game_start_offset=320,
@@ -136,10 +154,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_10 = game_state.Question(
         game_start_offset=330, question='What was the name of entertainer Michael Jackson\'s rare skin disease?',
         answers=['Vitiligo', 'Argyria', 'Pemphigus'],
+        question_index=9
     )
     answer_reveal_10 = game_state.AnswerReveal(
         game_start_offset=345, question=question_10, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=9
     )
     fact_10 = game_state.QuestionFact(
         game_start_offset=350,
@@ -149,10 +169,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_11 = game_state.Question(
         game_start_offset=360, question='Which of these animals can dive nearly 20 feet below water for food?',
         answers=['Moose', 'Tortoise', 'Hippopotamus'],
+        question_index=10
     )
     answer_reveal_11 = game_state.AnswerReveal(
         game_start_offset=375, question=question_11, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=10
     )
     fact_11 = game_state.QuestionFact(
         game_start_offset=380,
@@ -162,10 +184,12 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     question_12 = game_state.Question(
         game_start_offset=390, question='What is the name of the biggest cargo ship in the world?',
         answers=['Ever Ace', 'Ever Aim', 'HMM Algeciras'],
+        question_index=11
     )
     answer_reveal_12 = game_state.AnswerReveal(
         game_start_offset=405, question=question_12, correct_answer_ind=0,
         answer_count={0: 100, 1: 75, 2: 50},
+        question_index=11
     )
     fact_12 = game_state.QuestionFact(
         game_start_offset=410,
@@ -193,6 +217,8 @@ def _get_demo_scenario_1() -> game_state.Scenario:
 async def _distribute_chain_event(program: authority_solana.Program, pusher_conn: pusher_client.Pusher,
                                   active_game: game.Game, event: game_state.AnyEvent, question_keypair: Keypair):
     print('[chain_distributing]', event)
+    additional_socket_fields = {}
+
     if event.type == game_state.EventType.question:
         await authority_solana.reveal_question(
             program=program,
@@ -209,7 +235,10 @@ async def _distribute_chain_event(program: authority_solana.Program, pusher_conn
             answer_variant_id=event.correct_answer_ind + 1
         )
 
-    pusher_conn.trigger(active_game.socket_key(), event.type.value, event.dict())
+    if event.type in [game_state.EventType.question, event.type == game_state.EventType.answer_reveal]:
+        additional_socket_fields['question_public_key'] = question_keypair.public_key.to_base58()
+
+    pusher_conn.trigger(active_game.socket_key(), event.type.value, event.dict() + additional_socket_fields)
 
 
 def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: game.Game, event: game_state.AnyEvent):

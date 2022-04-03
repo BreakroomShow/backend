@@ -38,6 +38,7 @@ class Question(BaseEvent):
     duration = 10.0
     question: str
     answers: List[str]
+    question_index: int
 
 
 class AnswerReveal(BaseEvent):
@@ -47,6 +48,7 @@ class AnswerReveal(BaseEvent):
     question: Question
     correct_answer_ind: int
     answer_count: Dict[int, int]  # ind => count
+    question_index: int
 
 
 class IntroSplash(BaseEvent):
