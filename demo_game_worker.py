@@ -238,7 +238,7 @@ async def _distribute_chain_event(program: authority_solana.Program, pusher_conn
     if event.type in [game_state.EventType.question, event.type == game_state.EventType.answer_reveal]:
         additional_socket_fields['question_public_key'] = question_keypair.public_key.to_base58()
 
-    pusher_conn.trigger(active_game.socket_key(), event.type.value, event.dict() + additional_socket_fields)
+    pusher_conn.trigger(active_game.socket_key(), event.type.value, {**event.dict(), **additional_socket_fields})
 
 
 def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: game.Game, event: game_state.AnyEvent):
