@@ -38,7 +38,7 @@ async def main():
 
 
 async def get_program() -> Program:
-    client = AsyncClient("https://api.devnet.solana.com")
+    client = AsyncClient("https://wispy-summer-river.solana-devnet.quiknode.pro/a4030f5defc3f7b7306d2460e35578282d1fe8b8/")
     # TxOpts(skip_preflight=True) to skip simulation
     provider = Provider(client, _authority_wallet(), TxOpts())
     program_id = PublicKey(_DEVNET_DEPLOYED_PROGRAM_ID)
