@@ -302,7 +302,10 @@ async def main():
     while True:
         program = await authority_solana.get_program()
 
-        await program.provider.connection.request_airdrop(program.provider.wallet.public_key, 1_000_000_000)
+        try:
+            await program.provider.connection.request_airdrop(program.provider.wallet.public_key, 1_000_000_000)
+        except Exception as e:
+            print('[airdrop_exception]', e)
 
         chain_name = 'Test game'
         starts_at = datetime.utcfromtimestamp((int(time.time()) // interval) * interval + interval).replace(tzinfo=pytz.UTC)
