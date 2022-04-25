@@ -1,8 +1,10 @@
+import os
 import asyncio
 from datetime import datetime
 from typing import List
 import time
 import pytz
+import sentry_sdk
 from solana.keypair import Keypair
 from libs import game_state, authority_solana, pusher_client, redis_connection
 from models import game, replay
@@ -295,6 +297,8 @@ async def _submit_questions_to_contract(program: authority_solana.Program, game:
 
 
 async def main():
+    sentry_sdk.init(os.environ['SENTRY_URL'], traces_sample_rate=1.0)
+
     interval = 600
     redis_conn = redis_connection.get()
     pusher_conn = pusher_client.get_pusher_client()
