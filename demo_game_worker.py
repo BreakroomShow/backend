@@ -1,6 +1,6 @@
 import os
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 import time
 import pytz
@@ -216,6 +216,23 @@ def _get_demo_scenario_1() -> game_state.Scenario:
     ])
 
 
+def _get_demo_scenario_2() -> game_state.Scenario:
+    question_1 = game_state.Question(
+        game_start_offset=60, question='Cristiano Ronaldo plays which sport?',
+        answers=['Soccer', 'Basketball', 'Baseball'],
+        question_index=0
+    )
+    answer_reveal_1 = game_state.AnswerReveal(
+        game_start_offset=75, question=question_1, correct_answer_ind=0,
+        answer_count={0: 100, 1: 75, 2: 50},
+        question_index=0
+    )
+    return game_state.Scenario(events=[
+        question_1,
+        answer_reveal_1,
+    ])
+
+
 async def _distribute_chain_event(program: authority_solana.Program, pusher_conn: pusher_client.Pusher,
                                   active_game: game.Game, event: game_state.AnyEvent, question_keypair: Keypair):
     print('[chain_distributing]', event)
@@ -254,14 +271,17 @@ def _distribute_socket_event(pusher_conn: pusher_client.Pusher, active_game: gam
     pusher_conn.trigger(active_game.socket_key(), pusher_type, pusher_data)
 
 
-def _generate_chat_messages() -> List[game_state.PlannedChatMessage]:
+def _generate_chat_messages(game_duration: int) -> List[game_state.PlannedChatMessage]:
     planned_messages = []
     for line in open('demo_game_comments.txt'):
         offset, text = line.strip().split(' ', maxsplit=1)
+        offset = int(offset)
+        if offset > game_duration:
+            break
         planned_messages.append(game_state.PlannedChatMessage(
             text=text,
             from_id=str(Keypair.generate().public_key),
-            game_start_offset=int(offset),
+            game_start_offset=offset,
         ))
     return planned_messages
 
@@ -299,7 +319,7 @@ async def _submit_questions_to_contract(program: authority_solana.Program, game:
 async def main():
     sentry_sdk.init(os.environ['SENTRY_URL'], traces_sample_rate=1.0)
 
-    interval = 600
+    interval = 30
     redis_conn = redis_connection.get()
     pusher_conn = pusher_client.get_pusher_client()
 
@@ -307,16 +327,23 @@ async def main():
         program = await authority_solana.get_program()
 
         try:
-            await program.provider.connection.request_airdrop(program.provider.wallet.public_key, 1_000_000_000)
+            await (
+                (await authority_solana.get_program(official_rpc=True))
+                .provider.connection.request_airdrop(program.provider.wallet.public_key, 1_000_000_000)
+            )
         except Exception as e:
             print('[airdrop_exception]', e)
 
         chain_name = 'Test game'
         starts_at = datetime.utcfromtimestamp((int(time.time()) // interval) * interval + interval).replace(tzinfo=pytz.UTC)
+
+        prize_fund = await authority_solana.create_devnet_prize_fund(program, program.provider.wallet.public_key)
+
         game_index = await authority_solana.create_game(
             program,
             name=chain_name,
-            start_time=starts_at,
+            start_time=starts_at + timedelta(seconds=3600),
+            prize_fund=prize_fund
         )
         new_game = game.Game(
             id=None,
@@ -327,14 +354,17 @@ async def main():
         game.create(redis_conn, new_game)
         game.mark_current(redis_conn, new_game.id)
 
-        scenario = _get_demo_scenario_1()
+        scenario = _get_demo_scenario_2()
         scenario.events = sorted(scenario.events, key=lambda e: e.game_start_offset)
+        game_duration = int(scenario.events[-1].game_start_offset + scenario.events[-1].duration)
 
         scenario.events = sorted(
             scenario.events +
-            _generate_chat_messages() +
+            _generate_chat_messages(
+                game_duration=game_duration,
+            ) +
             _generate_viewer_counter_updates(
-                game_duration=int(scenario.events[-1].game_start_offset + scenario.events[-1].duration),
+                game_duration=game_duration,
                 update_interval=2,
                 first_question_at=int(
                     list(filter(lambda event: event.type == game_state.EventType.question, scenario.events))
@@ -346,26 +376,26 @@ async def main():
             key=lambda e: e.game_start_offset
         )
 
-        question_keypairs = [Keypair.generate() for _ in range(12)]
-        current_question = 0
+        question_events = [event for event in scenario.events if type(event) == game_state.Question]
 
-        await asyncio.sleep(5)  # Give time to confirm previous transactions
+        question_keypairs = [Keypair.generate() for _ in range(len(question_events))]
+        current_question = 0
 
         await _submit_questions_to_contract(
             program,
             new_game,
-            [event for event in scenario.events if type(event) == game_state.Question],
+            question_events,
             question_keypairs
         )
 
-        await asyncio.sleep(5)  # Give time to confirm previous transactions
+        await authority_solana.wait_until_accounts_created(program, [keypair.public_key for keypair in question_keypairs])
 
-        await asyncio.sleep(max(new_game.chain_start_time.timestamp() - time.time(), 0))
-        replay.record_start(redis_conn, new_game.id, time.time())
+        actual_start_time = time.time()
+        replay.record_start(redis_conn, new_game.id, actual_start_time)
 
         while scenario.events:
             next_event = scenario.events.pop(0)
-            current_offset = time.time() - new_game.chain_start_time.timestamp()
+            current_offset = time.time() - actual_start_time
             await asyncio.sleep(max(next_event.game_start_offset - current_offset, 0))
 
             if next_event.distribution_type == game_state.DistributionType.chain:
@@ -384,4 +414,6 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(main(
+
+    ))

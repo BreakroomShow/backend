@@ -1,3 +1,4 @@
+import asyncio
 import json
 import hashlib
 from pathlib import Path
@@ -5,13 +6,17 @@ import os
 from typing import Tuple, List
 from datetime import datetime
 import base58
+from pydantic import BaseModel
 from solana.rpc.async_api import AsyncClient
 from solana.publickey import PublicKey
 from solana.keypair import Keypair
 from solana.system_program import SYS_PROGRAM_ID
 from solana.rpc.types import TxOpts
-from solana.rpc.commitment import Confirmed
+from solana.rpc.commitment import Confirmed, Finalized
+from solana.sysvar import SYSVAR_RENT_PUBKEY
 from anchorpy import Program, Provider, Wallet, Idl, Context
+from anchorpy.utils.token import create_mint_and_vault
+from spl.token.constants import TOKEN_PROGRAM_ID
 
 _DEVNET_DEPLOYED_PROGRAM_ID = "Eb7ZLJqhTDmLDcoGbKUy6DKxSBraNEsfbDST4FWiXAwv"
 
@@ -19,6 +24,18 @@ TRIVIA = b'trivia'
 GAME = b'game'
 USER = b'user'
 PLAYER = b'player'
+VAULT = b'vault'
+VAULT_AUTHORITY = b'vault_authority'
+
+
+class PrizeFund(BaseModel):
+    amount: int
+    mint: PublicKey
+    deposit_account: PublicKey
+
+    class Config:
+        use_enum_values = True
+        arbitrary_types_allowed = True
 
 
 async def main():
@@ -37,8 +54,11 @@ async def main():
     await program.close()
 
 
-async def get_program() -> Program:
-    client = AsyncClient("https://wispy-summer-river.solana-devnet.quiknode.pro/a4030f5defc3f7b7306d2460e35578282d1fe8b8/")
+async def get_program(official_rpc=False) -> Program:
+    rpc_url = 'https://wispy-summer-river.solana-devnet.quiknode.pro/a4030f5defc3f7b7306d2460e35578282d1fe8b8/'
+    if official_rpc:
+        rpc_url = 'https://api.devnet.solana.com'
+    client = AsyncClient(rpc_url)
     # TxOpts(skip_preflight=True) to skip simulation
     provider = Provider(client, _authority_wallet(), TxOpts())
     program_id = PublicKey(_DEVNET_DEPLOYED_PROGRAM_ID)
@@ -47,28 +67,70 @@ async def get_program() -> Program:
     return program
 
 
-async def create_game(program: Program, name: str, start_time: datetime) -> int:
+async def wait_until_accounts_created(program: Program, accounts: List[PublicKey]):
+    print('[wait_until_accounts_created]', 'started')
+    while True:
+        accounts_values = (await program.provider.connection.get_multiple_accounts(accounts, Finalized))['result']['value']
+        print(accounts_values)
+        if all([value is not None for value in accounts_values]):
+            print('[wait_until_accounts_created]', 'finished')
+            return True
+        await asyncio.sleep(0.5)
+
+
+async def create_devnet_prize_fund(program: Program, owner: PublicKey) -> PrizeFund:
+    amount = 100
+    (mint_public_key, vault_public_key) = await create_mint_and_vault(program.provider, amount, owner)
+    await wait_until_accounts_created(program, [mint_public_key, vault_public_key])
+    return PrizeFund(
+        amount=amount,
+        mint=mint_public_key,
+        deposit_account=vault_public_key
+    )
+
+
+async def create_game(program: Program, name: str, start_time: datetime, prize_fund: PrizeFund) -> int:
     trivia_pda, trivia_bump = _trivia_pda(program.program_id)
     games_counter = (await program.account['Trivia'].fetch(trivia_pda)).games_counter
 
-    print(program.program_id, trivia_pda, games_counter)
+    game_pda, _ = _game_pda(program.program_id, trivia_pda, games_counter)
+    vault_pda, _ = _vault_pda(program.program_id, game_pda)
+    vault_authority_pda, _ = _vault_authority_pda(program.program_id, game_pda)
 
-    game_pda, game_bump = _game_pda(program.program_id, trivia_pda, games_counter)
+    print(prize_fund.mint)
 
-    options = program.type['GameOptions'](name=name, start_time=int(start_time.timestamp()))
+    options = program.type['GameOptions'](name=name, start_time=int(start_time.timestamp()), prize_fund_amount=prize_fund.amount)
 
-    print(options)
-
-    print(game_pda)
-
-    await program.rpc["create_game"](options, game_bump, ctx=Context(accounts={
+    result = await program.rpc["create_game"](options, ctx=Context(accounts={
         'game': game_pda,
         'trivia': trivia_pda,
         'authority': program.provider.wallet.public_key,
+        'prize_fund_mint': prize_fund.mint,
+        'prize_fund_vault': vault_pda,
+        'prize_fund_deposit': prize_fund.deposit_account,
+        'prize_fund_vault_authority': vault_authority_pda,
         'system_program': SYS_PROGRAM_ID,
+        'token_program': TOKEN_PROGRAM_ID,
+        'rent': SYSVAR_RENT_PUBKEY
     }, signers=[program.provider.wallet.payer]))
 
+    print(result)
+    print([game_pda, vault_pda])
+
+    await wait_until_accounts_created(program, [game_pda, vault_pda])
+
     return games_counter
+
+
+async def start_game(program: Program, game_index: int):
+    trivia_pda, _ = _trivia_pda(program.program_id)
+    game_pda, _ = _game_pda(program.program_id, trivia_pda, game_index)
+
+    await program.rpc["start_game"](ctx=Context(accounts={
+        'game': game_pda,
+        'authority': program.provider.wallet.public_key,
+        'system_program': SYS_PROGRAM_ID,
+    }, signers=[program.provider.wallet.payer], options=TxOpts(preflight_commitment=Confirmed)))
 
 
 async def add_question(program: Program, game_index: int, keypair: Keypair, text: str, variants: List[str], time: int):
@@ -130,6 +192,14 @@ def _trivia_pda(program_id: PublicKey) -> Tuple[PublicKey, int]:
 
 def _game_pda(program_id: PublicKey, trivia_pda: PublicKey, game_index: int) -> Tuple[PublicKey, int]:
     return PublicKey.find_program_address([GAME, bytes(trivia_pda), str(game_index).encode('utf-8')], program_id)
+
+
+def _vault_pda(program_id: PublicKey, game_pda: PublicKey) -> Tuple[PublicKey, int]:
+    return PublicKey.find_program_address([VAULT, bytes(game_pda)], program_id)
+
+
+def _vault_authority_pda(program_id: PublicKey, game_pda: PublicKey) -> Tuple[PublicKey, int]:
+    return PublicKey.find_program_address([VAULT_AUTHORITY, bytes(game_pda)], program_id)
 
 
 def _sequence_sha256(sequence: List[str]) -> bytes:
