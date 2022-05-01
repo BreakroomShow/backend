@@ -3,7 +3,7 @@ import json
 import hashlib
 from pathlib import Path
 import os
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from datetime import datetime
 import base58
 from pydantic import BaseModel
@@ -27,6 +27,11 @@ USER = b'user'
 PLAYER = b'player'
 VAULT = b'vault'
 VAULT_AUTHORITY = b'vault_authority'
+
+
+def _message_from_rpc_error(error: RPCException) -> Optional[str]:
+    if len(error.args) == 1 and type(error.args[0]) == dict:
+        return error.args[0].get('message')
 
 
 class PrizeFund(BaseModel):
@@ -88,9 +93,9 @@ async def create_devnet_prize_fund(program: Program, owner: PublicKey) -> PrizeF
             (mint_public_key, vault_public_key) = await create_mint_and_vault(program.provider, amount, owner)
             break
         except RPCException as error:
-            error_data = json.loads(str(error))
+            error_message = _message_from_rpc_error(error)
             is_last_retry = retry == (retries - 1)
-            should_retry = error_data['message'] == 'Transaction simulation failed: Blockhash not found'
+            should_retry = error_message == 'Transaction simulation failed: Blockhash not found'
             if should_retry and not is_last_retry:
                 continue
             raise error
@@ -132,9 +137,9 @@ async def create_game(program: Program, name: str, start_time: datetime, prize_f
             }, signers=[program.provider.wallet.payer]))
             break
         except RPCException as error:
-            error_data = json.loads(str(error))
+            error_message = _message_from_rpc_error(error)
             is_last_retry = retry == (retries - 1)
-            should_retry = error_data['message'] == 'Transaction simulation failed: Blockhash not found'
+            should_retry = error_message == 'Transaction simulation failed: Blockhash not found'
             if should_retry and not is_last_retry:
                 continue
             raise error
