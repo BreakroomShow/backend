@@ -13,6 +13,7 @@ from solana.keypair import Keypair
 from solana.system_program import SYS_PROGRAM_ID
 from solana.rpc.types import TxOpts
 from solana.rpc.commitment import Confirmed, Finalized
+from solana.rpc.core import RPCException
 from solana.sysvar import SYSVAR_RENT_PUBKEY
 from anchorpy import Program, Provider, Wallet, Idl, Context
 from anchorpy.utils.token import create_mint_and_vault
@@ -80,7 +81,20 @@ async def wait_until_accounts_created(program: Program, accounts: List[PublicKey
 
 async def create_devnet_prize_fund(program: Program, owner: PublicKey) -> PrizeFund:
     amount = 100
-    (mint_public_key, vault_public_key) = await create_mint_and_vault(program.provider, amount, owner)
+
+    retries = 3
+    for retry in range(retries):
+        try:
+            (mint_public_key, vault_public_key) = await create_mint_and_vault(program.provider, amount, owner)
+            break
+        except RPCException as error:
+            error_data = json.loads(str(error))
+            is_last_retry = retry == (retries - 1)
+            should_retry = error_data['message'] == 'Transaction simulation failed: Blockhash not found'
+            if should_retry and not is_last_retry:
+                continue
+            raise error
+
     await wait_until_accounts_created(program, [mint_public_key, vault_public_key])
     return PrizeFund(
         amount=amount,
@@ -101,21 +115,29 @@ async def create_game(program: Program, name: str, start_time: datetime, prize_f
 
     options = program.type['GameOptions'](name=name, start_time=int(start_time.timestamp()), prize_fund_amount=prize_fund.amount)
 
-    result = await program.rpc["create_game"](options, ctx=Context(accounts={
-        'game': game_pda,
-        'trivia': trivia_pda,
-        'authority': program.provider.wallet.public_key,
-        'prize_fund_mint': prize_fund.mint,
-        'prize_fund_vault': vault_pda,
-        'prize_fund_deposit': prize_fund.deposit_account,
-        'prize_fund_vault_authority': vault_authority_pda,
-        'system_program': SYS_PROGRAM_ID,
-        'token_program': TOKEN_PROGRAM_ID,
-        'rent': SYSVAR_RENT_PUBKEY
-    }, signers=[program.provider.wallet.payer]))
-
-    print(result)
-    print([game_pda, vault_pda])
+    retries = 3
+    for retry in range(retries):
+        try:
+            result = await program.rpc["create_game"](options, ctx=Context(accounts={
+                'game': game_pda,
+                'trivia': trivia_pda,
+                'authority': program.provider.wallet.public_key,
+                'prize_fund_mint': prize_fund.mint,
+                'prize_fund_vault': vault_pda,
+                'prize_fund_deposit': prize_fund.deposit_account,
+                'prize_fund_vault_authority': vault_authority_pda,
+                'system_program': SYS_PROGRAM_ID,
+                'token_program': TOKEN_PROGRAM_ID,
+                'rent': SYSVAR_RENT_PUBKEY
+            }, signers=[program.provider.wallet.payer]))
+            break
+        except RPCException as error:
+            error_data = json.loads(str(error))
+            is_last_retry = retry == (retries - 1)
+            should_retry = error_data['message'] == 'Transaction simulation failed: Blockhash not found'
+            if should_retry and not is_last_retry:
+                continue
+            raise error
 
     await wait_until_accounts_created(program, [game_pda, vault_pda])
 
