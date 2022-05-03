@@ -1,4 +1,5 @@
 import asyncio
+import time
 import json
 import hashlib
 from pathlib import Path
@@ -15,6 +16,7 @@ from solana.rpc.types import TxOpts
 from solana.rpc.commitment import Confirmed, Finalized
 from solana.rpc.core import RPCException
 from solana.sysvar import SYSVAR_RENT_PUBKEY
+from solana.exceptions import SolanaRpcException
 from anchorpy import Program, Provider, Wallet, Idl, Context
 from anchorpy.utils.token import create_mint_and_vault
 from spl.token.constants import TOKEN_PROGRAM_ID
@@ -32,6 +34,10 @@ VAULT_AUTHORITY = b'vault_authority'
 def _message_from_rpc_error(error: RPCException) -> Optional[str]:
     if len(error.args) == 1 and type(error.args[0]) == dict:
         return error.args[0].get('message')
+
+
+class AccountsNotFound(Exception):
+    pass
 
 
 class PrizeFund(BaseModel):
@@ -73,15 +79,22 @@ async def get_program(official_rpc=False) -> Program:
     return program
 
 
-async def wait_until_accounts_created(program: Program, accounts: List[PublicKey]):
+async def wait_until_accounts_created(program: Program, accounts: List[PublicKey], limit_seconds: int = 60):
     print('[wait_until_accounts_created]', 'started')
-    while True:
-        accounts_values = (await program.provider.connection.get_multiple_accounts(accounts, Finalized))['result']['value']
+    started = time.time()
+    while (time.time() - started) < limit_seconds:
+        try:
+            accounts_values = (await program.provider.connection.get_multiple_accounts(accounts, Finalized))['result']['value']
+        except SolanaRpcException as e:
+            print('[wait_until_accounts_created]', 'exception', e)
+            await asyncio.sleep(0.5)
+            continue
         print(accounts_values)
         if all([value is not None for value in accounts_values]):
             print('[wait_until_accounts_created]', 'finished')
             return True
         await asyncio.sleep(0.5)
+    raise AccountsNotFound()
 
 
 async def create_devnet_prize_fund(program: Program, owner: PublicKey) -> PrizeFund:
